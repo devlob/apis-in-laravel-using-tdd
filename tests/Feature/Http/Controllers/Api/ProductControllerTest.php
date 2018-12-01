@@ -21,7 +21,7 @@ class ProductControllerTest extends TestCase
             'slug' => str_slug($name),
             'price' => $price = random_int(10, 100)
         ]);
-        
+
         $response->assertJsonStructure([
             'id', 'name', 'slug', 'price', 'created_at'
         ])
