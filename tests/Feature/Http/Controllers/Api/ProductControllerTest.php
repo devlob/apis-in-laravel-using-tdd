@@ -38,4 +38,36 @@ class ProductControllerTest extends TestCase
             'price' => $price
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function will_fail_with_a_404_if_product_is_not_found()
+    {
+        $response = $this->json('GET', 'api/products/-1');
+
+        $response->assertStatus(404);
+    }
+
+    /**
+     * @test
+     */
+    public function can_return_a_product()
+    {
+        // Given
+        $product = $this->create('Product');
+
+        // When
+        $response = $this->json('GET', "api/products/$product->id");
+
+        // Then
+        $response->assertStatus(200)
+            ->assertExactJson([
+                'id' => $product->id,
+                'name' => $product->name,
+                'slug' => $product->slug,
+                'price' => $product->price,
+                'created_at' => (string)$product->created_at
+            ]);
+    }
 }
