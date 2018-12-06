@@ -26,4 +26,17 @@ class ProductController extends Controller
 
         return response()->json(new ProductResource($product));
     }
+
+    public function update(Request $request, int $id)
+    {
+        $product = Product::findOrfail($id);
+
+        $product->update([
+            'name' => $request->name,
+            'slug' => str_slug($request->name),
+            'price' => $request->price
+        ]);
+
+        return response()->json(new ProductResource($product));
+    }
 }
