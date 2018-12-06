@@ -9,6 +9,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ProductControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @test
      */
