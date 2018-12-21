@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Http\Controllers\Auth;
 
+use Mockery;
 use Tests\TestCase;
+use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AuthControllerTest extends TestCase
@@ -28,5 +30,29 @@ class AuthControllerTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonStructure(['token']);
+    }
+
+    /**
+     * @test
+     */
+    public function can_authenticate_using_google()
+    {
+        $abstractUser = Mockery::mock('Laravel\Socialite\Two\User');
+        $abstractUser->shouldReceive('getId')
+            ->andReturn(rand())
+            ->shouldReceive('getEmail')
+            ->andReturn('johnDoe@acme.com')
+            ->shouldReceive('getName')
+            ->andReturn('John Doe')
+            ->shouldReceive('getAvatar')
+            ->andReturn('https://en.gravatar.com/userimage');
+
+        $provider = Mockery::mock('Laravel\Socialite\Contracts\Provider');
+        $provider->shouldReceive('user')->andReturn($abstractUser);
+
+        Socialite::shouldReceive('driver')->andReturn($provider);
+
+        $this->get('/social/auth/google/callback')
+            ->assertStatus(302);
     }
 }

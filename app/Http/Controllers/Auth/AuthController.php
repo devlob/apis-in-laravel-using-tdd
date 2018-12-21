@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -17,5 +18,20 @@ class AuthController extends Controller
 
             return response()->json(['token' => $token]);
         }
+    }
+
+    public function redirect($provider)
+    {
+        return Socialite::driver($provider)->redirect();
+    }
+
+    public function callback($provider)
+    {
+        $user = Socialite::driver($provider)->user();
+
+        \Log::info('user', [$user]);
+        \Log::info($user->token);
+
+        return redirect()->away("http://localhost:8000?token=$user->token");
     }
 }
