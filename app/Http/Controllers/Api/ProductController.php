@@ -6,6 +6,7 @@ use App\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductCollection;
+use App\Http\Requests\ProductStoreRequest;
 use App\Http\Resources\Product as ProductResource;
 
 class ProductController extends Controller
@@ -15,7 +16,7 @@ class ProductController extends Controller
         return new ProductCollection(Product::paginate());
     }
 
-    public function store(Request $request)
+    public function store(ProductStoreRequest $request)
     {
         $product = Product::create([
             'name' => $request->name,
