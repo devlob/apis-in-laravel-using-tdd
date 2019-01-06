@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Product;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductCollection;
 use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\Product as ProductResource;
 
 class ProductController extends Controller
@@ -34,7 +34,7 @@ class ProductController extends Controller
         return response()->json(new ProductResource($product));
     }
 
-    public function update(Request $request, int $id)
+    public function update(ProductUpdateRequest $request, int $id)
     {
         $product = Product::findOrfail($id);
 

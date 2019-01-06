@@ -116,6 +116,73 @@ class ProductControllerTest extends TestCase
     /**
      * @test
      */
+    public function will_fail_with_validation_errors_when_updating_a_product_with_wrong_inputs()
+    {
+        $product = $this->create('Product');
+        $product2 = $this->create('Product');
+
+        $response = $this->actingAs($this->create('User', [], false), 'api')->json('PUT', "/api/products/$product2->id", [
+            'name' => $product->name,
+            'price' => 'aaa'
+        ]);
+
+        $response->assertStatus(422)
+            ->assertExactJson([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'price' => [
+                        'The price must be an integer.'
+                    ],
+
+                    'name' => [
+                        'The name has already been taken.'
+                    ]
+                ]
+            ]);
+
+        $response = $this->actingAs($this->create('User', [], false), 'api')->json('PUT', "/api/products/$product2->id", [
+            'name' => '',
+            'price' => 100
+        ]);
+
+        $response->assertStatus(422)
+            ->assertExactJson([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'name' => [
+                        'The name field is required.'
+                    ]
+                ]
+            ]);
+
+        $response = $this->actingAs($this->create('User', [], false), 'api')->json('PUT', "/api/products/$product2->id", [
+            'name' => str_random(65),
+            'price' => 100
+        ]);
+
+        $response->assertStatus(422)
+            ->assertExactJson([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'name' => [
+                        'The name may not be greater than 64 characters.'
+                    ]
+                ]
+            ]);
+
+        $product3 = $this->create('Product');
+
+        $response = $this->actingAs($this->create('User', [], false), 'api')->json('PUT', "/api/products/$product3->id", [
+            'name' => $product3->name,
+            'price' => 100
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    /**
+     * @test
+     */
     public function can_create_a_product()
     {
         $faker = Factory::create();
