@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Image;
 use App\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductCollection;
@@ -18,7 +19,12 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
+        $path = $request->file('image')->store('product_images', 'public');
+
         $product = Product::create([
+            'image_id' => Image::create([
+                'path' => $path
+            ]),
             'name' => $request->name,
             'slug' => str_slug($request->name),
             'price' => $request->price
