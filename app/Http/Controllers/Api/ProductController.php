@@ -19,12 +19,16 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
-        $path = $request->file('image')->store('product_images', 'public');
+        if($request->hasFile('image')) {
+            $path = $request->file('image')->store('product_images', 'public');
+
+            $imageId = Image::create([
+                'path' => $path
+            ])->id;
+        } else $imageId = null;
 
         $product = Product::create([
-            'image_id' => Image::create([
-                'path' => $path
-            ]),
+            'image_id' => $imageId,
             'name' => $request->name,
             'slug' => str_slug($request->name),
             'price' => $request->price

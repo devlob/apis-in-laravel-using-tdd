@@ -189,6 +189,36 @@ class ProductControllerTest extends TestCase
     {
         $faker = Factory::create();
 
+        $response = $this->actingAs($this->create('User', [], false), 'api')->json('POST', '/api/products', [
+            'name' => $name = $faker->company,
+            'slug' => str_slug($name),
+            'price' => $price = random_int(10, 100)
+        ]);
+
+        $response->assertJsonStructure([
+            'id', 'image_id', 'name', 'slug', 'price', 'created_at'
+        ])
+        ->assertJson([
+            'name' => $name,
+            'slug' => str_slug($name),
+            'price' => $price
+        ])
+        ->assertStatus(201);
+
+        $this->assertDatabaseHas('products', [
+            'name' => $name,
+            'slug' => str_slug($name),
+            'price' => $price
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function can_create_a_product_with_image()
+    {
+        $faker = Factory::create();
+
         Storage::fake('public');
 
         $image = UploadedFile::fake()->image('image.jpg');
@@ -280,6 +310,7 @@ class ProductControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertExactJson([
                 'id' => $product->id,
+                'image_id' => null,
                 'name' => $product->name.'_updated',
                 'slug' => str_slug($product->name.'_updated'),
                 'price' => $product->price + 10,
@@ -288,6 +319,7 @@ class ProductControllerTest extends TestCase
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
+            'image_id' => null,
             'name' => $product->name.'_updated',
             'slug' => str_slug($product->name.'_updated'),
             'price' => $product->price + 10,
