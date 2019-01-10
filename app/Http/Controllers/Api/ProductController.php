@@ -48,7 +48,16 @@ class ProductController extends Controller
     {
         $product = Product::findOrfail($id);
 
+        if($request->hasFile('image')) {
+            $path = $request->file('image')->store('product_images', 'public');
+            
+            $imageId = Image::create([
+                'path' => $path
+            ])->id;
+        } else $imageId = $product->image_id;
+
         $product->update([
+            'image_id' => $imageId,
             'name' => $request->name,
             'slug' => str_slug($request->name),
             'price' => $request->price

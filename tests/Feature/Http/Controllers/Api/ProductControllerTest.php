@@ -331,6 +331,45 @@ class ProductControllerTest extends TestCase
     /**
      * @test
      */
+    public function can_update_a_product_with_image()
+    {
+        $product = $this->create('Product');
+
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('image.jpg');
+
+        $response = $this->actingAs($this->create('User', [], false), 'api')->json('PUT', "api/products/$product->id", [
+            'name' => $product->name.'_updated',
+            'slug' => str_slug($product->name.'_updated'),
+            'price' => $product->price + 10,
+            'image' => $image
+        ]);
+
+        $response->assertStatus(200)
+            ->assertExactJson([
+                'id' => $product->id,
+                'image_id' => json_decode($response->getContent())->image_id,
+                'name' => $product->name.'_updated',
+                'slug' => str_slug($product->name.'_updated'),
+                'price' => $product->price + 10,
+                'created_at' => (string)$product->created_at
+            ]);
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'image_id' => json_decode($response->getContent())->image_id,
+            'name' => $product->name.'_updated',
+            'slug' => str_slug($product->name.'_updated'),
+            'price' => $product->price + 10,
+            'created_at' => (string)$product->created_at,
+            'updated_at' => (string)$product->updated_at
+        ]);
+    }
+
+    /**
+     * @test
+     */
     public function will_fail_with_a_404_if_product_we_want_to_delete_is_not_found()
     {
         $response = $this->actingAs($this->create('User', [], false), 'api')->json('DELETE', 'api/products/-1');
