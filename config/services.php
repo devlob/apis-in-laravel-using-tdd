@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -40,9 +39,8 @@ return [
         ],
     ],
     'google' => [
-        'client_id' => '3793248891-hri1hjdq69bbeeo2mlk9bgjl365ec3kd.apps.googleusercontent.com',
-        'client_secret' => 'uv3rNZk2dI4tgrC_9et_lgn-',
-        'redirect' => '/social/auth/google/callback'
-    ]
-
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => '/social/auth/google/callback',
+    ],
 ];
